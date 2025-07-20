@@ -859,3 +859,203 @@ extension MoneyExtension on num {
 //     late Item bagel;
 //     late CartState cartState;
 //     late
+
+
+
+
+
+
+
+
+
+
+
+
+// /// Event to undo the last action (nice-to-have)
+// class UndoLastAction extends CartEvent {
+//   const UndoLastAction();
+// }
+
+// /// Event to redo the last undone action (nice-to-have)
+// class RedoLastAction extends CartEvent {
+//   const RedoLastAction();
+// }
+
+// /// Cart BLoC with hydration support and undo/redo functionality
+// class CartBloc extends HydratedBloc<CartEvent, CartState> {
+//   static const int _maxHistorySize = 10;
+//   final List<CartState> _history = [];
+//   int _historyIndex = -1;
+
+//   CartBloc() : super(const CartState.empty()) {
+//     on<AddItem>(_onAddItem);
+//     on<RemoveItem>(_onRemoveItem);
+//     on<ChangeQuantity>(_onChangeQuantity);
+//     on<ChangeDiscount>(_onChangeDiscount);
+//     on<ClearCart>(_onClearCart);
+//     on<UndoLastAction>(_onUndoLastAction);
+//     on<RedoLastAction>(_onRedoLastAction);
+//   }
+
+//   void _onAddItem(AddItem event, Emitter<CartState> emit) {
+//     _saveToHistory(state);
+    
+//     final existingLineIndex = state.lines.indexWhere(
+//       (line) => line.product.id == event.product.id,
+//     );
+
+//     List<CartLine> newLines;
+//     if (existingLineIndex >= 0) {
+//       // Update existing line
+//       final existingLine = state.lines[existingLineIndex];
+//       final updatedLine = existingLine.copyWith(
+//         quantity: existingLine.quantity + event.quantity,
+//       );
+//       newLines = List.from(state.lines);
+//       newLines[existingLineIndex] = updatedLine;
+//     } else {
+//       // Add new line
+//       newLines = [
+//         ...state.lines,
+//         CartLine(product: event.product, quantity: event.quantity),
+//       ];
+//     }
+
+//     final newTotals = _calculateTotals(newLines);
+//     emit(CartState(lines: newLines, totals: newTotals));
+//   }
+
+//   void _onRemoveItem(RemoveItem event, Emitter<CartState> emit) {
+//     _saveToHistory(state);
+    
+//     final newLines = state.lines
+//         .where((line) => line.product.id != event.productId)
+//         .toList();
+
+//     final newTotals = _calculateTotals(newLines);
+//     emit(CartState(lines: newLines, totals: newTotals));
+//   }
+
+//   void _onChangeQuantity(ChangeQuantity event, Emitter<CartState> emit) {
+//     _saveToHistory(state);
+    
+//     if (event.quantity <= 0) {
+//       add(RemoveItem(event.productId));
+//       return;
+//     }
+
+//     final lineIndex = state.lines.indexWhere(
+//       (line) => line.product.id == event.productId,
+//     );
+
+//     if (lineIndex < 0) return; // Product not found
+
+//     final newLines = List<CartLine>.from(state.lines);
+//     newLines[lineIndex] = newLines[lineIndex].copyWith(quantity: event.quantity);
+
+//     final newTotals = _calculateTotals(newLines);
+//     emit(CartState(lines: newLines, totals: newTotals));
+//   }
+
+//   void _onChangeDiscount(ChangeDiscount event, Emitter<CartState> emit) {
+//     _saveToHistory(state);
+    
+//     final lineIndex = state.lines.indexWhere(
+//       (line) => line.product.id == event.productId,
+//     );
+
+//     if (lineIndex < 0) return; // Product not found
+
+//     // Clamp discount between 0 and 1
+//     final clampedDiscount = event.discountPercent.clamp(0.0, 1.0);
+
+//     final newLines = List<CartLine>.from(state.lines);
+//     newLines[lineIndex] = newLines[lineIndex].copyWith(
+//       discountPercent: clampedDiscount,
+//     );
+
+//     final newTotals = _calculateTotals(newLines);
+//     emit(CartState(lines: newLines, totals: newTotals));
+//   }
+
+//   void _onClearCart(ClearCart event, Emitter<CartState> emit) {
+//     _saveToHistory(state);
+//     emit(const CartState.empty());
+//   }
+
+//   void _onUndoLastAction(UndoLastAction event, Emitter<CartState> emit) {
+//     if (_historyIndex > 0) {
+//       _historyIndex--;
+//       emit(_history[_historyIndex]);
+//     }
+//   }
+
+//   void _onRedoLastAction(RedoLastAction event, Emitter<CartState> emit) {
+//     if (_historyIndex < _history.length - 1) {
+//       _historyIndex++;
+//       emit(_history[_historyIndex]);
+//     }
+//   }
+
+//   /// Calculates totals based on business rules
+//   CartTotals _calculateTotals(List<CartLine> lines) {
+//     double subtotal = 0.0;
+//     double totalDiscount = 0.0;
+
+//     for (final line in lines) {
+//       subtotal += line.lineNet;
+//       totalDiscount += line.discountAmount;
+//     }
+
+//     // VAT = 15%
+//     final vat = subtotal * 0.15;
+//     final grandTotal = subtotal + vat;
+
+//     return CartTotals(
+//       subtotal: subtotal,
+//       vat: vat,
+//       discount: totalDiscount,
+//       grandTotal: grandTotal,
+//     );
+//   }
+
+//   void _saveToHistory(CartState state) {
+//     // Remove any future history if we're in the middle of history
+//     if (_historyIndex < _history.length - 1) {
+//       _history.removeRange(_historyIndex + 1, _history.length);
+//     }
+
+//     _history.add(state);
+//     _historyIndex = _history.length - 1;
+
+//     // Limit history size
+//     if (_history.length > _maxHistorySize) {
+//       _history.removeAt(0);
+//       _historyIndex--;
+//     }
+//   }
+
+//   /// Can undo if there's history available
+//   bool get canUndo => _historyIndex > 0;
+
+//   /// Can redo if we're not at the end of history
+//   bool get canRedo => _historyIndex < _history.length - 1;
+
+//   @override
+//   CartState? fromJson(Map<String, dynamic> json) {
+//     try {
+//       return CartState.fromJson(json);
+//     } catch (_) {
+//       return null;
+//     }
+//   }
+
+//   @override
+//   Map<String, dynamic>? toJson(CartState state) {
+//     try {
+//       return state.toJson();
+//     } catch (_) {
+//       return null;
+//     }
+//   }
+// }
