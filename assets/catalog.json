@@ -1,0 +1,22 @@
+[
+ { "id": "p01", "name": "Coffee", "price": 2.50 },
+ { "id": "p02", "name": "Bagel", "price": 3.20 },
+ { "id": "p03", "name": "Orange Juice", "price": 4.10 },
+ { "id": "p04", "name": "Croissant", "price": 2.90 },
+ { "id": "p05", "name": "Sandwich", "price": 5.50 },
+ { "id": "p06", "name": "Water Bottle", "price": 1.20 },
+ { "id": "p07", "name": "Chocolate Bar", "price": 1.80 },
+ { "id": "p08", "name": "Chips", "price": 2.00 },
+ { "id": "p09", "name": "Muffin", "price": 2.70 },
+ { "id": "p10", "name": "Tea", "price": 2.00 },
+ { "id": "p11", "name": "Salad", "price": 6.30 },
+ { "id": "p12", "name": "Soda", "price": 1.50 },
+ { "id": "p13", "name": "Cookie", "price": 1.30 },
+ { "id": "p14", "name": "Yogurt", "price": 2.10 },
+ { "id": "p15", "name": "Fruit Cup", "price": 3.40 },
+ { "id": "p16", "name": "Energy Drink", "price": 3.00 },
+ { "id": "p17", "name": "Ice Cream", "price": 2.80 },
+ { "id": "p18", "name": "Hot Dog", "price": 4.50 },
+ { "id": "p19", "name": "Burger", "price": 7.20 },
+ { "id": "p20", "name": "Pizza Slice", "price": 3.80 }
+]
